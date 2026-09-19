@@ -1,0 +1,29 @@
+# Python caches and local environments
+__pycache__/
+*.py[cod]
+.python-version
+.venv/
+venv/
+
+# Operating-system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDE/editor state
+.idea/
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Local archives, scratch work, and generated research output
+*.zip
+work/
+tmp/
+temp/
+.cache/
+
+# Codex/local agent state
+.codex/
