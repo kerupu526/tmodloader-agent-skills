@@ -45,11 +45,14 @@ those concerns explicit.
 Codex discovers user-level skills as sibling directories beneath
 `~/.agents/skills/`. Copy the individual `tmodloader-*` directories there;
 do not copy the outer repository directory as an additional nesting level.
+Also copy the suite's shared `SOURCE-MAP.md` directly into the same skills
+root. It is a companion provenance file, not an eleventh Skill.
 
 Expected user-level layout:
 
 ```text
 ~/.agents/skills/
+├── SOURCE-MAP.md
 ├── tmodloader-modding/
 ├── tmodloader-versioning/
 ├── tmodloader-items-projectiles/
@@ -72,6 +75,13 @@ From a clone or an extracted copy of this repository:
 $source = (Resolve-Path '.').Path
 $destination = Join-Path $env:USERPROFILE '.agents\skills'
 New-Item -ItemType Directory -Force $destination | Out-Null
+
+$sourceMap = Join-Path $source 'SOURCE-MAP.md'
+$sourceMapTarget = Join-Path $destination 'SOURCE-MAP.md'
+if (Test-Path -LiteralPath $sourceMapTarget) {
+  throw "Shared source map already exists: $sourceMapTarget. Compare it before replacing it."
+}
+Copy-Item -LiteralPath $sourceMap -Destination $sourceMapTarget
 
 Get-ChildItem -LiteralPath $source -Directory |
   Where-Object { $_.Name -like 'tmodloader-*' } |
