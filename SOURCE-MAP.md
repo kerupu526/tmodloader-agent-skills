@@ -1,6 +1,6 @@
 # Terraria/tModLoader Skill Suite — source map
 
-Research snapshot: 2026-09-20 (Asia/Seoul).
+Research snapshot: 2026-10-14 (Asia/Seoul).
 
 This package is a set of Codex skills, not a copy of the tModLoader manual. The
 references below are deliberately links to maintained upstream material. Read
@@ -10,23 +10,28 @@ treat this snapshot as a replacement for the live API reference.
 ## Version lanes observed
 
 At the snapshot date, the official API site exposes separate `stable`,
-`preview`, `1.4-stable`, and `1.3` documentation trees. The stable generated
-API identifies itself as tModLoader `v2026.07`. The upstream repository exposes
-`stable`, `preview`, `1.4.4`, and `1.4.5` branches. The skill suite therefore
-uses these as lanes to detect, not as timeless guarantees:
+`preview`, `1.4-stable`, and `1.3` documentation trees. The docs selector
+labels them as follows, and the docs path name is **not** the same as the lane
+name: `stable` is "1.4.4-stable" (`v2026.08`), `preview` is "1.4.4-preview"
+(`v2026.09`), `1.4-stable` is "1.4.3-legacy" (`v2022.09`), and `1.3` is
+"1.3-legacy" (`v0.11.8.9`). The upstream repository exposes `stable`,
+`preview`, `1.4.4`, `1.4.5`, `1.4.3-legacy`, and `1.3` branches, among many
+feature branches. The skill suite therefore uses these as lanes to detect, not
+as timeless guarantees:
 
 | Lane | Use |
 | --- | --- |
-| `stable` / stable docs | Default for a normal released mod unless the project says otherwise. |
-| `preview` / `1.4.5` | Preview or development work only after confirming the project branch/build. |
-| `1.4.4` / `1.4-stable` | Explicit 1.4.4 maintenance or porting work. |
-| `1.4.3-legacy` / `1.3` | Legacy support only; never mix its examples into current work. |
+| `stable` / stable docs (labelled 1.4.4-stable) | Default for a normal released mod unless the project says otherwise. |
+| `preview` / preview docs (labelled 1.4.4-preview) | Preview work only after confirming the project branch/build. |
+| `1.4.4` branch | Explicit work on that branch. The docs selector has no separate 1.4.4 tree, so use the stable tree and confirm against the installed build. |
+| `1.4.5` branch | Development branch; no matching docs tree was observed, so rely on its source and treat signatures as unstable. |
+| `1.4.3-legacy` branch / `1.4-stable` docs / `1.3` | Legacy support only; never mix its examples into current work. Note that the `1.4-stable` docs path is the 1.4.3 legacy tree, not 1.4.4. |
 
 The repository heads observed during this research were `stable` at
-`666f69962d3bdffde54fc14025f02634965b4e7c`, `preview` at
-`2a633b0bcc8312737873350257074db8cce192d6`, `1.4.4` at
-`cd937bbe458587ecfadd52b04092dd912c5bdacd`, and `1.4.5` at
-`61e4750b6ce26387db427b1d7b7373941fab214d`. These hashes are a research
+`c9545cf27d56c456321e1896274c02adf67d0140`, `preview` at
+`cd3ab192d024e24199f25c026255a53b33920399`, `1.4.4` at
+`9f77de713f9eb18f0b0a2fcb3ccd0af50673e311`, and `1.4.5` at
+`cf510c2001d3b7ef2b47936763fd1ca819260ae0`. These hashes are a research
 snapshot only; a future task must resolve the project's actual commit again.
 
 ## Primary sources
@@ -34,7 +39,7 @@ snapshot only; a future task must resolve the project's actual commit again.
 - [tModLoader API documentation selector](https://docs.tmodloader.net/)
 - [Stable API class list](https://docs.tmodloader.net/docs/stable/annotated.html)
 - [Preview API class list](https://docs.tmodloader.net/docs/preview/annotated.html)
-- [1.4 stable API class list](https://docs.tmodloader.net/docs/1.4-stable/annotated.html)
+- [1.4.3-legacy API class list (docs path `1.4-stable`)](https://docs.tmodloader.net/docs/1.4-stable/annotated.html)
 - [tModLoader repository](https://github.com/tModLoader/tModLoader)
 - [Stable ExampleMod README](https://github.com/tModLoader/tModLoader/blob/stable/ExampleMod/README.md)
 - [Stable ExampleMod source tree](https://github.com/tModLoader/tModLoader/tree/stable/ExampleMod)
