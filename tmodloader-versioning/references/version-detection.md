@@ -19,7 +19,9 @@ Use multiple signals. No single filename is a reliable version detector.
   preview switch/branch is present, start with the stable API tree.
 - If it explicitly targets preview or the `1.4.5` branch, use preview/1.4.5
   documentation and state that the API may move.
-- If it names `1.4.4`, use the 1.4.4/stable lane even if a newer preview exists.
+- If it explicitly names `1.4.4` maintenance, use the `1.4.4` branch and the
+  `1.4-stable` API tree, even if a newer preview exists. Do not assume the
+  current `stable` tree is identical; confirm against the installed build.
 - If it names 1.4.3 or 1.3, use the legacy API tree and the historical
   migration notes; do not “modernize” unrelated code during a compatibility
   fix.

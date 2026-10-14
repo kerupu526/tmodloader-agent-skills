@@ -14,6 +14,10 @@ from pathlib import Path
 
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 PLACEHOLDERS = ("TODO", "<your", "{your", "lorem ipsum")
+INLINE_LINK_RE = re.compile(r"\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
+REFERENCE_LINK_RE = re.compile(r"^\[[^\]]+\]:\s*(\S+)", re.MULTILINE)
+EXTERNAL_PREFIXES = ("http://", "https://", "mailto:", "#")
+SHARED_FILE = "SOURCE-MAP.md"
 
 
 def fail(message: str) -> None:
@@ -43,6 +47,28 @@ def parse_frontmatter(path: Path) -> tuple[str, str]:
     return name, text
 
 
+def check_links(root: Path, skill_dir: Path, markdown: Path) -> None:
+    """Every relative link must exist and stay inside the installable unit.
+
+    A skill is installed as a bare directory next to the shared SOURCE-MAP.md,
+    so the only legal target outside the skill directory is that one file.
+    """
+    text = markdown.read_text(encoding="utf-8")
+    targets = INLINE_LINK_RE.findall(text) + REFERENCE_LINK_RE.findall(text)
+    shared = (root / SHARED_FILE).resolve()
+    for target in targets:
+        if target.startswith(EXTERNAL_PREFIXES):
+            continue
+        resolved = (markdown.parent / target.split("#", 1)[0]).resolve()
+        if not resolved.is_file():
+            fail(f"{markdown}: broken relative link {target}")
+        if resolved != shared and skill_dir.resolve() not in resolved.parents:
+            fail(
+                f"{markdown}: link {target} leaves the skill directory and "
+                f"would not exist after installation"
+            )
+
+
 def main() -> int:
     root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path(__file__).resolve().parents[1]
     if not root.is_dir():
@@ -64,10 +90,12 @@ def main() -> int:
             fail(f"duplicate skill name: {skill_name}")
         names.add(skill_name)
 
-        for reference in re.findall(r"\]\((references/[^)]+)\)", text):
-            target = skill_file.parent / reference
-            if not target.is_file():
-                fail(f"{skill_file}: missing linked reference {reference}")
+        for markdown in sorted(skill_file.parent.rglob("*.md")):
+            check_links(root, skill_file.parent, markdown)
+
+        for reference in sorted((skill_file.parent / "references").glob("*.md")):
+            if f"references/{reference.name}" not in text:
+                fail(f"{skill_file}: references/{reference.name} is never linked")
 
         if "## When to use" not in text:
             fail(f"{skill_file}: missing a When to use section")

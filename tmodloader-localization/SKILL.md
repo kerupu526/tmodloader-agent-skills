@@ -30,8 +30,10 @@ content or visible UI is added.
    changing a key or placeholder.
 5. Review copy for gender/plural/grammar context, text expansion, UI width,
    accessibility, and language fallback. Run the [localization QA script]
-   when checking a directory of HJSON files; it is intentionally a lightweight
-   structural check, not a full HJSON parser.
+   (`python scripts/check_localization_keys.py <english.hjson> <other.hjson>...`,
+   path relative to this skill directory) to compare translated files with the
+   English file; it is intentionally a lightweight structural check, not a full
+   HJSON parser.
 6. Switch languages in-game and build/reload. Verify item names, tooltips,
    bestiary/spawn text, NPC dialogue, config labels, UI, chat, and error paths.
 
@@ -58,4 +60,4 @@ content or visible UI is added.
 - Use the suite [SOURCE-MAP](../SOURCE-MAP.md) for the official wiki and
   ExampleMod links.
 
-[localization QA script]: ../../scripts/check_localization_keys.py
+[localization QA script]: scripts/check_localization_keys.py

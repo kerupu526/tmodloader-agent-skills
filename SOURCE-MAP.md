@@ -1,6 +1,6 @@
 # Terraria/tModLoader Skill Suite — source map
 
-Research snapshot: 2026-09-20 (Asia/Seoul).
+Research snapshot: 2026-10-14 (Asia/Seoul).
 
 This package is a set of Codex skills, not a copy of the tModLoader manual. The
 references below are deliberately links to maintained upstream material. Read
@@ -11,7 +11,7 @@ treat this snapshot as a replacement for the live API reference.
 
 At the snapshot date, the official API site exposes separate `stable`,
 `preview`, `1.4-stable`, and `1.3` documentation trees. The stable generated
-API identifies itself as tModLoader `v2026.07`. The upstream repository exposes
+API identifies itself as tModLoader `v2026.08`. The upstream repository exposes
 `stable`, `preview`, `1.4.4`, and `1.4.5` branches. The skill suite therefore
 uses these as lanes to detect, not as timeless guarantees:
 
@@ -23,10 +23,10 @@ uses these as lanes to detect, not as timeless guarantees:
 | `1.4.3-legacy` / `1.3` | Legacy support only; never mix its examples into current work. |
 
 The repository heads observed during this research were `stable` at
-`666f69962d3bdffde54fc14025f02634965b4e7c`, `preview` at
-`2a633b0bcc8312737873350257074db8cce192d6`, `1.4.4` at
-`cd937bbe458587ecfadd52b04092dd912c5bdacd`, and `1.4.5` at
-`61e4750b6ce26387db427b1d7b7373941fab214d`. These hashes are a research
+`c9545cf27d56c456321e1896274c02adf67d0140`, `preview` at
+`cd3ab192d024e24199f25c026255a53b33920399`, `1.4.4` at
+`9f77de713f9eb18f0b0a2fcb3ccd0af50673e311`, and `1.4.5` at
+`cf510c2001d3b7ef2b47936763fd1ca819260ae0`. These hashes are a research
 snapshot only; a future task must resolve the project's actual commit again.
 
 ## Primary sources

@@ -15,6 +15,7 @@ from pathlib import Path
 
 KEY_RE = re.compile(r'^\s*(?:"([^"]+)"|([A-Za-z0-9_.-]+))\s*:\s*(.*?)\s*$')
 PLACEHOLDER_RE = re.compile(r"\{(\d+)(?:,[^}]*)?(?::[^}]*)?\}")
+MULTILINE = "'''"
 
 
 def strip_comment(line: str) -> str:
@@ -35,6 +36,10 @@ def strip_comment(line: str) -> str:
     return line
 
 
+def placeholders(text: str) -> tuple[str, ...]:
+    return tuple(PLACEHOLDER_RE.findall(text))
+
+
 def extract(path: Path) -> tuple[set[str], dict[str, tuple[str, ...]]]:
     text = path.read_text(encoding="utf-8")
     stack: list[str] = []
@@ -42,20 +47,39 @@ def extract(path: Path) -> tuple[set[str], dict[str, tuple[str, ...]]]:
     values: dict[str, tuple[str, ...]] = {}
     multiline_key: str | None = None
     multiline_parts: list[str] = []
+    # A key with nothing after the colon: the multiline block may open on the
+    # next non-blank line, which is the usual layout for tooltips/dialogue.
+    pending_key: str | None = None
+
+    def open_multiline(key: str, rest: str) -> None:
+        nonlocal multiline_key, multiline_parts
+        if MULTILINE in rest:
+            values[key] = placeholders(rest.partition(MULTILINE)[0])
+            multiline_key = None
+            multiline_parts = []
+        else:
+            multiline_key = key
+            multiline_parts = [rest]
+
     for raw in text.splitlines():
-        line = strip_comment(raw).strip()
         if multiline_key is not None:
-            if "'''" in line:
-                before, _separator, _after = line.partition("'''")
-                multiline_parts.append(before)
-                values[multiline_key] = tuple(
-                    PLACEHOLDER_RE.findall("\n".join(multiline_parts))
-                )
+            # Inside a multiline block everything is text: no comments, no keys.
+            if MULTILINE in raw:
+                multiline_parts.append(raw.partition(MULTILINE)[0])
+                values[multiline_key] = placeholders("\n".join(multiline_parts))
                 multiline_key = None
                 multiline_parts = []
             else:
-                multiline_parts.append(line)
+                multiline_parts.append(raw)
             continue
+        line = strip_comment(raw).strip()
+        if pending_key is not None:
+            if not line:
+                continue
+            key, pending_key = pending_key, None
+            if line.startswith(MULTILINE):
+                open_multiline(key, line[len(MULTILINE):])
+                continue
         if not line or line.startswith("/*"):
             continue
         closing = 0
@@ -72,17 +96,12 @@ def extract(path: Path) -> tuple[set[str], dict[str, tuple[str, ...]]]:
         value = match.group(3).rstrip(",")
         path_key = ".".join([*stack, key])
         keys.add(path_key)
-        values[path_key] = tuple(PLACEHOLDER_RE.findall(value))
-        if value.startswith("'''"):
-            multiline_key = path_key
-            multiline_parts = [value[3:]]
-            if "'''" in multiline_parts[0]:
-                before, _separator, _after = multiline_parts[0].partition("'''")
-                values[path_key] = tuple(PLACEHOLDER_RE.findall(before))
-                multiline_key = None
-                multiline_parts = []
-            continue
-        if value.endswith("{") or value == "{":
+        values[path_key] = placeholders(value)
+        if value.startswith(MULTILINE):
+            open_multiline(path_key, value[len(MULTILINE):])
+        elif value == "":
+            pending_key = path_key
+        elif value.endswith("{"):
             stack.append(key)
     return keys, values
 
@@ -105,7 +124,8 @@ def main() -> int:
         if missing:
             errors.append(f"{path}: missing {len(missing)} obvious keys; first: {missing[0]}")
         for key in sorted(english_keys & keys):
-            if english_values.get(key) != values.get(key):
+            # Translations may reorder placeholders, but must keep the same set.
+            if sorted(english_values.get(key, ())) != sorted(values.get(key, ())):
                 errors.append(f"{path}: placeholder mismatch at {key}")
 
     if errors:

@@ -102,8 +102,10 @@ Skill silently.
 ### Project-specific installation
 
 For a single mod repository, copy the same sibling directories under that
-project's `.agents/skills/` directory. Project-local skills are useful when a
-mod has conventions or APIs that should not affect unrelated projects.
+project's `.agents/skills/` directory, and put `SOURCE-MAP.md` directly in that
+same `.agents/skills/` directory, because every skill links to it as
+`../SOURCE-MAP.md`. Project-local skills are useful when a mod has conventions
+or APIs that should not affect unrelated projects.
 
 User-level installation applies across projects. Project-local installation is
 scoped to the project and can override or extend the context used for that
@@ -183,14 +185,28 @@ Run from the repository root:
 
 ```powershell
 python scripts/validate_suite.py .
-python -m py_compile scripts/validate_suite.py scripts/check_localization_keys.py
+python -m py_compile scripts/validate_suite.py tmodloader-localization/scripts/check_localization_keys.py
+python -m unittest discover -s tests
 ```
 
-The suite validator checks frontmatter, naming, required sections, linked
-references, and unfinished scaffold text. The localization checker performs a
-conservative UTF-8/key/placeholder check; use an HJSON-aware parser and an
-actual tModLoader Build + Reload for authoritative syntax and runtime
-validation.
+The suite validator checks frontmatter, naming, required sections, unfinished
+scaffold text, that every `references/` file is linked, and that every relative
+link in a skill resolves and stays inside that skill directory (the only
+allowed outside target is the shared `SOURCE-MAP.md`), because anything else
+would not exist after installation.
+
+The localization checker ships inside the skill that uses it, as
+`tmodloader-localization/scripts/check_localization_keys.py`, so it is installed
+with the skill. It performs a conservative UTF-8/key/placeholder check
+(multiline `'''` values are supported, and translations may reorder
+placeholders but must keep the same set):
+
+```powershell
+python check_localization_keys.py Localization/en-US.hjson Localization/ko-KR.hjson
+```
+
+Use an HJSON-aware parser and an actual tModLoader Build + Reload for
+authoritative syntax and runtime validation.
 
 ## Contributing
 
