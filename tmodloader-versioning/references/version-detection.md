@@ -17,14 +17,16 @@ Use multiple signals. No single filename is a reliable version detector.
 
 - If the project clearly targets the normal released installation and no
   preview switch/branch is present, start with the stable API tree.
-- If it explicitly targets preview or the `1.4.5` branch, use preview/1.4.5
-  documentation and state that the API may move.
-- If it explicitly names `1.4.4` maintenance, use the `1.4.4` branch and the
-  `1.4-stable` API tree, even if a newer preview exists. Do not assume the
-  current `stable` tree is identical; confirm against the installed build.
+- If it explicitly targets preview, use the preview API tree and state that the
+  API may move. For the `1.4.5` branch, no matching docs tree was observed:
+  rely on that branch's source and treat signatures as unstable.
+- If it explicitly names the `1.4.4` branch, use the stable API tree (the docs
+  selector labels it 1.4.4-stable) even if a newer preview exists, and confirm
+  against the installed build.
 - If it names 1.4.3 or 1.3, use the legacy API tree and the historical
   migration notes; do not “modernize” unrelated code during a compatibility
-  fix.
+  fix. The `1.4-stable` docs path is the 1.4.3 legacy tree (labelled
+  1.4.3-legacy), not 1.4.4.
 - If the evidence is insufficient, ask for the target only when changing the
   target would materially change the implementation. Otherwise inspect the
   API candidates and clearly mark the chosen assumption.
@@ -42,7 +44,7 @@ diagnostic examples; preserve the user's shell and repository conventions.
 
 ## Current-source reminder
 
-The official docs selector currently exposes stable, preview, 1.4-stable, and
-1.3 trees. The repository also carries separate `stable`, `preview`, `1.4.4`,
-and `1.4.5` branches. Re-check these links at task time because release status
+The official docs selector currently exposes stable, preview, 1.4-stable
+(labelled 1.4.3-legacy), and 1.3 trees. The repository also carries separate
+`stable`, `preview`, `1.4.4`, and `1.4.5` branches. Re-check these links at task time because release status
 and branch history can change.

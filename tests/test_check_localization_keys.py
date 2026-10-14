@@ -109,6 +109,55 @@ class LocalizationCheckerTests(unittest.TestCase):
         result = run(ENGLISH, GOOD.replace("경고: ", "경고 "))
         self.assertEqual(result.returncode, 0, result.stdout)
 
+    def test_commented_untranslated_entries_are_not_missing(self) -> None:
+        # tModLoader mirrors untranslated entries as "// Key: text" and as a
+        # "/* Key: ... */" block for multiline values; both fall back to English.
+        english = (
+            "Mods: {\n"
+            "\tM: {\n"
+            "\t\tA: Alpha {0}\n"
+            "\t\tB: Beta\n"
+            "\t\tCmd: {\n"
+            "\t\t\tUsage:\n"
+            "\t\t\t\t'''\n"
+            "\t\t\t\t/cmd name: arg {0}\n"
+            "\t\t\t\t'''\n"
+            "\t\t}\n"
+            "\t}\n"
+            "}\n"
+        )
+        translated = (
+            "Mods: {\n"
+            "\tM: {\n"
+            "\t\tA: 알파 {0}\n"
+            "\t\t// B: Beta\n"
+            "\t\tCmd: {\n"
+            "\t\t\t/* Usage:\n"
+            "\t\t\t\t'''\n"
+            "\t\t\t\t/cmd name: arg {0}\n"
+            "\t\t\t\t''' */\n"
+            "\t\t}\n"
+            "\t}\n"
+            "}\n"
+        )
+        result = run(english, translated)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("NOTE:", result.stdout)
+
+    def test_hash_prose_comment_does_not_hide_a_missing_key(self) -> None:
+        english = "Mods: {\n\tM: {\n\t\tNote: Hello\n\t}\n}\n"
+        translated = "Mods: {\n\tM: {\n\t\t# Note: translators read this\n\t}\n}\n"
+        result = run(english, translated)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("missing", result.stdout)
+
+    def test_repeated_placeholder_is_a_mismatch(self) -> None:
+        english = "Mods: {\n\tM: {\n\t\tA: {0} and {0}\n\t}\n}\n"
+        translated = "Mods: {\n\tM: {\n\t\tA: {0}\n\t}\n}\n"
+        result = run(english, translated)
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("placeholder mismatch", result.stdout)
+
 
 if __name__ == "__main__":
     unittest.main()

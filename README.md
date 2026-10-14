@@ -198,11 +198,12 @@ would not exist after installation.
 The localization checker ships inside the skill that uses it, as
 `tmodloader-localization/scripts/check_localization_keys.py`, so it is installed
 with the skill. It performs a conservative UTF-8/key/placeholder check
-(multiline `'''` values are supported, and translations may reorder
-placeholders but must keep the same set):
+(multiline `'''` values and tModLoader's commented-out untranslated entries are
+supported, and translations may reorder placeholders but must keep the same
+set; untranslated entries are reported as a NOTE, not an error):
 
 ```powershell
-python check_localization_keys.py Localization/en-US.hjson Localization/ko-KR.hjson
+python <skills-root>/tmodloader-localization/scripts/check_localization_keys.py Localization/en-US.hjson Localization/ko-KR.hjson
 ```
 
 Use an HJSON-aware parser and an actual tModLoader Build + Reload for
